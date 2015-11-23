@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="ThemeHouse_WatchedForums" title="[⌂] Watched Forums" version_string="1.0.2" version_id="1447261019" url="http://xf.themehouse.io/" install_callback_class="ThemeHouse_Install" install_callback_method="install" uninstall_callback_class="ThemeHouse_Install" uninstall_callback_method="uninstall">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates/>
+  <admin_template_modifications/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="controller_pre_dispatch" execute_order="10" callback_class="ThemeHouse_Listener_ControllerPreDispatch" callback_method="controllerPreDispatch" active="1" hint="" description=""/>
+    <listener event_id="file_health_check" execute_order="10" callback_class="ThemeHouse_WatchedForums_Listener_FileHealthCheck" callback_method="fileHealthCheck" active="1" hint="" description=""/>
+    <listener event_id="init_dependencies" execute_order="10" callback_class="ThemeHouse_Listener_InitDependencies" callback_method="initDependencies" active="1" hint="" description=""/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_WatchedForums_Listener_LoadClass" callback_method="loadClassModel" active="0" hint="XenForo_Model_ForumWatch" description="XenForo_Model_ForumWatch (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_WatchedForums_Listener_LoadClass" callback_method="loadClassController" active="0" hint="XenForo_ControllerPublic_Watched" description="XenForo_ControllerPublic_Watched (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_WatchedForums_Listener_LoadClass" callback_method="loadClassModel" active="0" hint="XenForo_Model_Forum" description="XenForo_Model_Forum (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="ThemeHouse_WatchedForums_Listener_LoadClass" callback_method="loadClassController" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="ThemeHouse_WatchedForums_Listener_LoadClass" callback_method="loadClassModel" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups/>
+  <permissions>
+    <permission_groups/>
+    <permissions>
+      <permission permission_group_id="forum" permission_id="watchForum" permission_type="flag" default_value="unset" interface_group_id="forumPermissions" display_order="1500"/>
+      <permission permission_group_id="general" permission_id="viewThreadsWatchedForums" permission_type="flag" default_value="unset" interface_group_id="generalPermissions" display_order="20000"/>
+    </permissions>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="permission_forum_watchForum" version_id="1416819352" version_string="1.0.0"><![CDATA[Watch forum]]></phrase>
+    <phrase title="permission_general_viewThreadsWatchedForums" version_id="1416819352" version_string="1.0.0"><![CDATA[View threads in watched forums]]></phrase>
+    <phrase title="th_all_threads_in_watched_forums_watchedforums" version_id="1416819352" version_string="1.0.0"><![CDATA[All Threads in Watched Forums]]></phrase>
+    <phrase title="th_manage_watched_forums_watchedforums" version_id="1416819352" version_string="1.0.0"><![CDATA[Manage Watched Forums]]></phrase>
+    <phrase title="th_override_alert_settings_for_existing_watched_forums_watchedforums" version_id="1416827307" version_string="1.0.0"><![CDATA[Override alert settings for existing watched forums]]></phrase>
+    <phrase title="th_show_all_threads_in_watched_forums_watchedforums" version_id="1416819352" version_string="1.0.0"><![CDATA[Show all threads in watched forums]]></phrase>
+    <phrase title="th_this_is_list_of_all_threads_in_forums_that_you_watching_watchedforums" version_id="1416819352" version_string="1.0.0"><![CDATA[This is a list of all the threads in forums that you are watching.]]></phrase>
+    <phrase title="th_this_is_list_of_x_most_recently_updated_threads_unread_replies_watchedforums" version_id="1416819352" version_string="1.0.0"><![CDATA[This is a list of the {count} most recently updated threads with unread replies in forums that you are watching.]]></phrase>
+    <phrase title="th_unread_threads_in_watched_forums_watchedforums" version_id="1416819352" version_string="1.0.0"><![CDATA[Unread Threads in Watched Forums]]></phrase>
+    <phrase title="th_watch_forums_watchedforums" version_id="1416819352" version_string="1.0.0"><![CDATA[Watch forums]]></phrase>
+    <phrase title="th_you_do_not_have_any_watched_forum_threads_that_unread_watchedforums" version_id="1416819352" version_string="1.0.0"><![CDATA[You do not have any threads in watched forums that are unread.]]></phrase>
+    <phrase title="th_you_sure_you_want_to_stop_watching_all_forums_watchedforums" version_id="1416819352" version_string="1.0.0"><![CDATA[Are you sure you want to stop watching all forums?]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates>
+    <template title="th_watch_forums_add_watchedforums" version_id="1417445168" version_string="1.0.1"><![CDATA[<xen:title>{xen:phrase th_watch_forums_watchedforums}...</xen:title>
+
+<xen:require css="th_watch_forums_add_watchedforums.css" />
+
+<form action="{xen:link 'watched/forums/add'}" method="post" class="xenForm formOverlay NoFixedOverlay AutoValidator" data-redirect="on">
+
+	<dl class="ctrlUnit">
+		<dt>{xen:phrase forums}:</dt>
+		<dd>
+			<ul class="nodeChooser">
+				<xen:foreach loop="$options" value="$option">
+					<li>
+						<label class="_depth{$option.depth}"><input type="checkbox" name="node_ids[]" value="{$option.value}"{xen:if '{$option.node_type_id} != "Forum" AND {$option.node_type_id} != "SocialCategory"', ' disabled="disabled"'}{xen:checked {$option.selected}} /> {$option.label}</label>
+						<input type="hidden" name="available_node_ids[]" value="{$option.value}" />
+					</li>
+				</xen:foreach>
+			</ul>
+		</dd>
+	</dl>
+
+	<dl class="ctrlUnit">
+		<dt>{xen:phrase send_notifications_for}:</dt>
+		<dd>
+			<ul>
+				<li>
+					<label>
+						<input type="radio" name="notify_on" value="thread" checked="checked" />
+						{xen:phrase new_threads}
+					</label>
+				</li>
+				<li>
+					<label>
+						<input type="radio" name="notify_on" value="message" />
+						{xen:phrase new_messages}
+					</label>
+				</li>
+				<li>
+					<label>
+						<input type="radio" name="notify_on" value="" />
+						{xen:phrase dont_send_notifications}
+						<p class="hint">{xen:phrase no_notifications_forum_watch_description}</p>
+					</label>
+				</li>
+			</ul>
+		</dd>
+	</dl>
+
+	<dl class="ctrlUnit">
+		<dt>{xen:phrase send_notifications_via}:</dt>
+		<dd>
+			<ul>
+				<li>
+					<label>
+						<input type="checkbox" name="send_alert" value="1" checked="checked" />
+						{xen:phrase alerts}
+					</label>
+				</li>
+				<li>
+					<label>
+						<input type="checkbox" name="send_email" value="1" />
+						{xen:phrase emails}
+					</label>
+				</li>
+			</ul>
+		</dd>
+	</dl>
+	
+	<dl class="ctrlUnit">
+		<dt></dt>
+		<dd>
+			<label><input type="checkbox" name="override" value="1" /> {xen:phrase th_override_alert_settings_for_existing_watched_forums_watchedforums}</label>
+		</dd>
+	</dl>
+
+	<dl class="ctrlUnit submitUnit">
+		<dt></dt>
+		<dd>
+			<input type="submit" value="{xen:phrase watch_forum}" class="button primary" />
+		</dd>
+	</dl>
+
+	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+	<input type="hidden" name="_xfConfirm" value="1" />
+</form>]]></template>
+    <template title="th_watch_forums_add_watchedforums.css" version_id="1416819352" version_string="1.0.0"><![CDATA[.nodeChooser {
+	max-height: 250px;
+	overflow: auto;
+}]]></template>
+    <template title="th_watch_forums_manage_watchedforums" version_id="1416819352" version_string="1.0.0"><![CDATA[<xen:title>{xen:phrase th_manage_watched_forums_watchedforums}</xen:title>
+
+<form action="{xen:link 'watched/forums/manage'}" method="post" class="xenForm formOverlay">
+
+	<xen:if is="{$action} == 'watch_no_email'">
+		<p>{xen:phrase you_sure_you_want_to_update_notification_settings_for_all_forums}</p>
+	<xen:else />
+		<p>{xen:phrase th_you_sure_you_want_to_stop_watching_all_forums_watchedforums}</p>
+	</xen:if>
+	
+	<dl class="ctrlUnit submitUnit">
+		<dt></dt>
+		<dd>
+			<input type="submit" value="{xen:phrase save_changes}" class="button primary" />
+		</dd>
+	</dl>
+
+	<input type="hidden" name="act" value="{$action}" />
+	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+	<input type="hidden" name="_xfConfirm" value="1" />
+</form>]]></template>
+    <template title="th_watch_threads_all_watchedforums" version_id="1416819352" version_string="1.0.0"><![CDATA[<xen:title>{xen:phrase th_all_threads_in_watched_forums_watchedforums}{xen:helper pagenumber, $page}</xen:title>
+<xen:h1>{xen:phrase th_all_threads_in_watched_forums_watchedforums}</xen:h1>
+
+<xen:description>{xen:phrase th_this_is_list_of_all_threads_in_forums_that_you_watching_watchedforums}</xen:description>
+
+<xen:navigation>
+	<xen:breadcrumb href="{xen:link full:watched/forums}">{xen:phrase watched_forums}</xen:breadcrumb>
+	<xen:breadcrumb href="{xen:link full:watched/forums/threads}">{xen:phrase th_unread_threads_in_watched_forums_watchedforums}</xen:breadcrumb>
+</xen:navigation>
+
+<xen:require css="discussion_list.css" />
+
+<div class="pageNavLinkGroup">
+	<xen:pagenav link="watched/forums/threads/all" page="{$page}" perpage="{$threadsPerPage}" total="{$totalThreads}" />
+</div>
+
+<div class="discussionList sectionMain">
+	<dl class="sectionHeaders">
+		<dt class="posterAvatar"></dt>
+		<dd class="main">
+			<a class="title"><span>{xen:phrase title}</span></a>
+			<a class="postDate"><span></span></a>
+		</dd>
+		<dd class="stats">
+			<a class="major"><span>{xen:phrase replies}</span></a>
+			<a class="minor"><span>{xen:phrase views}</span></a>
+		</dd>
+		<dd class="lastPost"><a><span>{xen:phrase last_message}</span></a></dd>
+	</dl>
+
+	<xen:if is="{$threads}">
+		<ol class="discussionListItems">
+		<xen:foreach loop="$threads" value="$thread">
+			<xen:include template="thread_list_item">
+				<xen:set var="$showSubscribeOptions">1</xen:set>
+				<xen:set var="$showForumLink">1</xen:set>
+				<xen:set var="$showLastPageNumbers">1</xen:set>
+			</xen:include>
+		</xen:foreach>
+		</ol>
+	<xen:else />
+		<div class="primaryContent">
+			<xen:if is="{$page} > 1">
+				{xen:phrase there_no_threads_to_display}
+			<xen:else />
+				{xen:phrase you_not_watching_any_forums}
+			</xen:if>
+		</div>
+	</xen:if>
+</div>
+
+<div class="pageNavLinkGroup">
+	<div class="linkGroup"></div>
+	<xen:pagenav link="watched/forums/threads/all" page="{$page}" perpage="{$threadsPerPage}" total="{$totalThreads}" />
+</div>
+
+<xen:include template="preview_tooltip" />]]></template>
+    <template title="th_watch_threads_watchedforums" version_id="1416819352" version_string="1.0.0"><![CDATA[<xen:title>{xen:phrase th_unread_threads_in_watched_forums_watchedforums}</xen:title>
+
+<xen:description>{xen:phrase th_this_is_list_of_x_most_recently_updated_threads_unread_replies_watchedforums, 'count={$xenOptions.discussionsPerPage}'} <a href="{xen:link 'watched/forums/threads/all'}">{xen:phrase there_may_be_more_to_view}</a></xen:description>
+
+<xen:navigation>
+	<xen:breadcrumb href="{xen:link full:watched/forums}">{xen:phrase watched_forums}</xen:breadcrumb>
+</xen:navigation>
+
+<xen:require css="discussion_list.css" />
+
+<div class="discussionList sectionMain">
+	<dl class="sectionHeaders">
+		<dt class="posterAvatar"></dt>
+		<dd class="main">
+			<a class="title"><span>{xen:phrase title}</span></a>
+			<a class="postDate"><span></span></a>
+		</dd>
+		<dd class="stats">
+			<a class="major"><span>{xen:phrase replies}</span></a>
+			<a class="minor"><span>{xen:phrase views}</span></a>
+		</dd>
+		<dd class="lastPost"><a><span>{xen:phrase last_message}</span></a></dd>
+	</dl>
+
+	<xen:if is="{$newThreads}">		
+		<ol class="discussionListItems">
+		<xen:foreach loop="$newThreads" value="$thread">
+			<xen:include template="thread_list_item">
+				<xen:set var="$showForumLink">1</xen:set>
+				<xen:set var="$showLastPageNumbers">1</xen:set>
+			</xen:include>
+		</xen:foreach>
+		</ol>
+	<xen:else />
+		<div class="primaryContent">{xen:phrase th_you_do_not_have_any_watched_forum_threads_that_unread_watchedforums}</div>
+	</xen:if>
+	
+	<div class="sectionFooter">
+		<a href="{xen:link 'watched/forums/threads/all'}">{xen:phrase th_show_all_threads_in_watched_forums_watchedforums}</a>
+	</div>
+
+</div>
+
+<xen:include template="preview_tooltip" />]]></template>
+  </templates>
+  <public_template_modifications>
+    <modification template="footer" modification_key="th_copyrightNotice_watchedForums" description="Copyright notice for [⌂] Watched Forums" execution_order="1" enabled="1" action="callback">
+      <find><![CDATA[/{xen:phrase (?:xenforo|extra)_copyright}/]]></find>
+      <replace><![CDATA[ThemeHouse_Listener_InitDependencies::copyrightNotice]]></replace>
+    </modification>
+    <modification template="watch_forums" modification_key="th_watchForums_watchedForums" description="Adds links to top of watched forums page." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#<form action="{xen:link 'watched/forums/update'}" method="post" class="sectionMain">#Us]]></find>
+      <replace><![CDATA[<div class="pageNavLinkGroup">
+	<div class="linkGroup">
+		<div class="Popup">
+			<a rel="Menu">{xen:phrase th_manage_watched_forums_watchedforums}</a>
+			<div class="Menu">
+				<div class="primaryContent menuHeader"><h3>{xen:phrase watched_forums}</h3></div>
+				<ul class="secondaryContent blockLinksList">
+					<li><a href="{xen:link watched/forums/add}" class="OverlayTrigger">{xen:phrase th_watch_forums_watchedforums}...</a></li>
+					<xen:if is="{$forums}">
+						<li><a href="{xen:link watched/forums/manage, '', 'act=watch_no_email'}" class="OverlayTrigger">{xen:phrase disable_email_notification}</a></li>
+						<li><a href="{xen:link watched/forums/manage, '', 'act='}" class="OverlayTrigger">{xen:phrase stop_watching_forums}</a></li>
+					</xen:if>
+				</ul>
+			</div>
+		</div>
+		<xen:if is="{$canViewThreadsInWatchedForums}">
+			<a href="{xen:link watched/forums/threads}">{xen:phrase th_unread_threads_in_watched_forums_watchedforums}</a>
+		</xen:if>
+	</div>
+</div>
+${0}]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
